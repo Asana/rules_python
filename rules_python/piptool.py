@@ -29,6 +29,9 @@ import zipfile
 # order, since these modules modify the import path and machinery.
 import pkg_resources
 
+WHEEL_CACHE_URL = "cached-python-packages.s3-website.us-east-1.amazonaws.com"
+PYPI_URL = "pypi.org/simple"
+
 
 def extract_packages(package_names):
     """Extract zipfile contents to disk and add to import path"""
@@ -78,7 +81,7 @@ def pip_main(argv):
     atexit.register(lambda: shutil.rmtree(cert_tmpdir, ignore_errors=True))
     with open(cert_path, "wb") as cert:
       cert.write(pkgutil.get_data("pip._vendor.requests", "cacert.pem"))
-    argv = ["--isolated", "--disable-pip-version-check", "--cert", cert_path] + argv
+    argv = argv + ["--isolated", "--disable-pip-version-check", "--cert", cert_path, "-i", "http://" + WHEEL_CACHE_URL, "--extra-index-url", "https://" + PYPI_URL, "--trusted-host", WHEEL_CACHE_URL]
     return pip.main(argv)
 
 from rules_python.whl import Wheel
