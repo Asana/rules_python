@@ -81,7 +81,7 @@ def pip_main(argv):
     atexit.register(lambda: shutil.rmtree(cert_tmpdir, ignore_errors=True))
     with open(cert_path, "wb") as cert:
       cert.write(pkgutil.get_data("pip._vendor.requests", "cacert.pem"))
-    argv = argv + ["--isolated", "--disable-pip-version-check", "--cert", cert_path, "-i", "http://" + WHEEL_CACHE_URL, "--trusted-host", WHEEL_CACHE_URL]
+    argv = argv + ["--isolated", "--disable-pip-version-check", "--cert", cert_path, "-i", "http://" + WHEEL_CACHE_URL, "--extra-index-url", "https://" + PYPI_URL, "--trusted-host", WHEEL_CACHE_URL]
     return pip.main(argv)
 
 from rules_python.whl import Wheel
