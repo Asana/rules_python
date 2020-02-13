@@ -29,9 +29,6 @@ import zipfile
 # order, since these modules modify the import path and machinery.
 import pkg_resources
 
-WHEEL_CACHE_URL = "cached-python-packages.s3-website.us-east-1.amazonaws.com"
-PYPI_URL = "pypi.org/simple"
-
 
 def extract_packages(package_names):
     """Extract zipfile contents to disk and add to import path"""
@@ -81,7 +78,7 @@ def pip_main(argv):
     atexit.register(lambda: shutil.rmtree(cert_tmpdir, ignore_errors=True))
     with open(cert_path, "wb") as cert:
       cert.write(pkgutil.get_data("pip._vendor.requests", "cacert.pem"))
-    argv = argv + ["--isolated", "--disable-pip-version-check", "--cert", cert_path, "-i", "http://" + WHEEL_CACHE_URL, "--extra-index-url", "https://" + PYPI_URL, "--trusted-host", WHEEL_CACHE_URL]
+    argv = ["--isolated", "--disable-pip-version-check", "--cert", cert_path] + argv
     return pip.main(argv)
 
 from rules_python.whl import Wheel
@@ -104,6 +101,15 @@ parser.add_argument('--output', action='store',
 
 parser.add_argument('--directory', action='store',
                     help=('The directory into which to put .whl files.'))
+
+parser.add_argument('--wheel_store_url', action='store',
+                    help=('The url we want to download python wheels from.'))
+
+parser.add_argument('--wheel_store_host', action='store',
+                    help=('The host url of the wheel store url.'))
+
+parser.add_argument('--fallback_url', action='store',
+                    help=('The url to download wheels from if they are not found in the main one.'))
 
 def determine_possible_extras(whls):
   """Determines the list of possible "extras" for each .whl
@@ -163,7 +169,12 @@ def main():
   args = parser.parse_args()
 
   # https://github.com/pypa/pip/blob/9.0.1/pip/__init__.py#L209
-  if pip_main(["wheel", "-w", args.directory, "-r", args.input]):
+  # If we pass in
+  if args.wheel_store_url and args.fallback_url and args.wheel_store_host:
+    if pip_main(["wheel", "-w", args.directory, "-r", args.input, "-i", args.wheel_store_url, "--extra-index-url", args.fallback_url, "--trusted-host", args.wheel_store_host]):
+      sys.exit(1)
+
+  elif pip_main(["wheel", "-w", args.directory, "-r", args.input]):
     sys.exit(1)
 
   # Enumerate the .whl files we downloaded.

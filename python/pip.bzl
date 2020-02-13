@@ -36,6 +36,12 @@ def _pip_import_impl(repository_ctx):
         repository_ctx.path("requirements.bzl"),
         "--directory",
         repository_ctx.path(""),
+        "--wheel_store_url",
+        repository_ctx.attr.wheel_store_url,
+        "--wheel_store_host",
+        repository_ctx.attr.wheel_store_host,
+        "--fallback_url",
+        repository_ctx.attr.fallback_url,
     ])
 
     if result.return_code:
@@ -56,6 +62,15 @@ wheels.
             executable = True,
             default = Label("//tools:piptool.par"),
             cfg = "host",
+        ),
+        "wheel_store_url": attr.label(
+            doc = "The url we want to download python wheels from.",
+        ),
+        "wheel_store_host": attr.label(
+            doc = "The host url of the wheel store url.",
+        ),
+        "fallback_url": attr.label(
+            doc = "The url to download wheels from if they are not found in the main one.",
         ),
     },
     implementation = _pip_import_impl,
