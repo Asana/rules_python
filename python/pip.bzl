@@ -23,7 +23,7 @@ def _pip_import_impl(repository_ctx):
     repository_ctx.file("BUILD", "")
 
     # To see the output, pass: quiet=False
-    result = repository_ctx.execute([
+    repository_execute_args = [
         repository_ctx.attr.python_interpreter,
         repository_ctx.path(repository_ctx.attr._script),
         "--python_interpreter",
@@ -36,13 +36,21 @@ def _pip_import_impl(repository_ctx):
         repository_ctx.path("requirements.bzl"),
         "--directory",
         repository_ctx.path(""),
-        "--wheel_store_url",
-        repository_ctx.attr.wheel_store_url,
-        "--wheel_store_host",
-        repository_ctx.attr.wheel_store_host,
-        "--fallback_url",
-        repository_ctx.attr.fallback_url,
-    ])
+    ]
+
+    # Only pass these optional parameters in if they exist
+    if repository_ctx.attr.wheel_store_url and repository_ctx.attr.wheel_store_host and repository_ctx.attr.fallback_url:
+        repository_execute_args.extend([
+            "--wheel_store_url",
+            repository_ctx.attr.wheel_store_url,
+            "--wheel_store_host",
+            repository_ctx.attr.wheel_store_host,
+            "--fallback_url",
+            repository_ctx.attr.fallback_url,
+        ])
+
+    result = repository_ctx.execute(repository_execute_args)
+
 
     if result.return_code:
         fail("pip_import failed: %s (%s)" % (result.stdout, result.stderr))

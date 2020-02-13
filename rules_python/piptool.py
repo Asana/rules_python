@@ -169,12 +169,12 @@ def main():
   args = parser.parse_args()
 
   # https://github.com/pypa/pip/blob/9.0.1/pip/__init__.py#L209
-  # If we pass in
+  # Only run pip with another package index if all 3 extra args are passed in
   if args.wheel_store_url and args.fallback_url and args.wheel_store_host:
     if pip_main(["wheel", "-w", args.directory, "-r", args.input, "-i", args.wheel_store_url, "--extra-index-url", args.fallback_url, "--trusted-host", args.wheel_store_host]):
       sys.exit(1)
 
-  elif pip_main(["wheel", "-w", args.directory, "-r", args.input]):
+  if pip_main(["wheel", "-w", args.directory, "-r", args.input]):
     sys.exit(1)
 
   # Enumerate the .whl files we downloaded.
