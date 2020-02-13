@@ -39,14 +39,14 @@ def _pip_import_impl(repository_ctx):
     ]
 
     # Only pass these optional parameters in if they exist
-    if repository_ctx.attr.wheel_store_url and repository_ctx.attr.wheel_store_host and repository_ctx.attr.fallback_url:
+    if repository_ctx.attr.wheel_store_host and repository_ctx.attr.fallback_url:
         repository_execute_args.extend([
             "--wheel_store_url",
-            repository_ctx.attr.wheel_store_url,
+            "http://" + repository_ctx.attr.wheel_store_host,
             "--wheel_store_host",
             repository_ctx.attr.wheel_store_host,
             "--fallback_url",
-            repository_ctx.attr.fallback_url,
+            "https://" + repository_ctx.attr.fallback_url,
         ])
 
     result = repository_ctx.execute(repository_execute_args)
