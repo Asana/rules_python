@@ -71,13 +71,13 @@ wheels.
             default = Label("//tools:piptool.par"),
             cfg = "host",
         ),
-        "wheel_store_url": attr.label(
+        "wheel_store_url": attr.string(
             doc = "The url we want to download python wheels from.",
         ),
-        "wheel_store_host": attr.label(
+        "wheel_store_host": attr.string(
             doc = "The host url of the wheel store url.",
         ),
-        "fallback_url": attr.label(
+        "fallback_url": attr.string(
             doc = "The url to download wheels from if they are not found in the main one.",
         ),
     },
