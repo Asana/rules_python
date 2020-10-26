@@ -233,6 +233,8 @@ _requirements = {{
   {mappings}
 }}
 
+all_requirements_names = _requirements.keys()
+
 all_requirements = _requirements.values()
 
 def requirement(name):
