@@ -1,4 +1,4 @@
-# Copyright 2018 The Bazel Authors. All rights reserved.
+# Copyright 2017-2019 The Bazel Authors. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,19 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import experimental.examples.wheel.lib.module_with_data as module_with_data
-import experimental.examples.wheel.lib.simple_module as simple_module
+import unittest
+
+from examples.py_import import helloworld
 
 
-def function():
-    return "baz"
+class HelloWorldTest(unittest.TestCase):
 
+  def test_helloworld(self):
+    hw = helloworld.HelloWorld()
+    hw.SayHello()
 
-def main():
-    print(function())
-    print(module_with_data.function())
-    print(simple_module.function())
+  def test_helloworld_async(self):
+    hw = helloworld.HelloWorld()
+    hw.SayHelloAsync()
+    hw.Stop()
+
+  def test_helloworld_multiple(self):
+    hw = helloworld.HelloWorld()
+    hw.SayHelloAsync()
+    hw.SayHelloAsync()
+    hw.SayHelloAsync()
+    hw.SayHelloAsync()
+    hw.Stop()
 
 
 if __name__ == '__main__':
-    main()
+  unittest.main()
